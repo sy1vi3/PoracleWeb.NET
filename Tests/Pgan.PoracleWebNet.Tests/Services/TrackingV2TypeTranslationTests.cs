@@ -33,7 +33,7 @@ public class TrackingV2TypeTranslationTests
             "min_iv", "min_level", "min_time", "min_weight", "override_areas", "override_location_label",
             "pokemon_id", "pvp_ranking_best", "pvp_ranking_cap", "pvp_ranking_evolution",
             "pvp_ranking_league", "pvp_ranking_min_cp", "pvp_ranking_worst", "rarity", "size", "sta",
-            "summary", "template",
+            "summary", "template", "shiny_for",
         ],
         ["raid"] =
         [
@@ -87,7 +87,7 @@ public class TrackingV2TypeTranslationTests
     {
         ["pokemon"] = """
             {"uid":36486,"id":"user1","profile_no":1,"ping":"","description":"**Pikachu**","clean":3,
-             "distance":1000,"template":"1","pokemon_id":25,"form":0,"costume":9000,"min_iv":90,
+             "shiny_for":"2","distance":1000,"template":"1","pokemon_id":25,"form":0,"costume":9000,"min_iv":90,
              "max_iv":100,"min_cp":0,"max_cp":9000,"min_level":0,"max_level":55,"atk":0,"def":0,"sta":0,
              "max_atk":15,"max_def":15,"max_sta":15,"gender":2,"min_weight":0,"max_weight":9000000,
              "min_time":0,"rarity":0,"max_rarity":6,"size":0,"max_size":5,"pvp_ranking_league":1500,

@@ -47,6 +47,32 @@ public class PoracleTrackingProxyV2Tests
         """;
 
     [Fact]
+    public async Task PersonalCreateUsesV2AndPreservesSelectedAccount()
+    {
+        var handler = ScriptedHandler.Ok("""{"created":[{"uid":42}]}""");
+        var sut = CreateSut(handler, version: "5.2.1");
+        var result = await sut.CreateAsync("pokemon", "user1", Row("""{"pokemon_id":25,"shiny_for":"2"}"""));
+        var request = Assert.Single(handler.Requests);
+        Assert.Contains("/api/v2/humans/user1/tracking/pokemon?silent=true", request.Url);
+        using var body = JsonDocument.Parse(request.Body!);
+        Assert.Equal("2", body.RootElement[0].GetProperty("shiny_for").GetString());
+        Assert.Equal(42, result.PrimaryUid);
+    }
+
+    [Fact]
+    public async Task RemovingShinySelectionUsesV2()
+    {
+        var handler = ScriptedHandler.Ok(RotatedOk);
+        var sut = CreateSut(handler, version: "5.2.1");
+        await sut.UpdateByUidAsync("pokemon", "user1", 36486, Row("""{"pokemon_id":25,"shiny_for":""}"""));
+        var request = Assert.Single(handler.Requests);
+        Assert.Equal(HttpMethod.Put, request.Method);
+        Assert.Contains("/api/v2/", request.Url);
+        using var body = JsonDocument.Parse(request.Body!);
+        Assert.Equal("", body.RootElement.GetProperty("shiny_for").GetString());
+    }
+
+    [Fact]
     public async Task V2PutSendsTheTranslatedRuleAndReportsTheNewUid()
     {
         var handler = ScriptedHandler.Ok(RotatedOk);

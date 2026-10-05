@@ -8,6 +8,7 @@ public static class AlarmMappingExtensions
 
     public static Monster ToMonster(this MonsterCreate src) => new()
     {
+        ShinyFor = src.ShinyFor,
         PokemonId = src.PokemonId,
         Ping = src.Ping,
         Distance = src.Distance,
@@ -45,6 +46,7 @@ public static class AlarmMappingExtensions
 
     public static void ApplyUpdate(this MonsterUpdate src, Monster dest)
     {
+        if (src.ShinyFor != null) dest.ShinyFor = src.ShinyFor;
         if (src.Ping != null) dest.Ping = src.Ping;
         if (src.Distance != null) dest.Distance = src.Distance.Value;
         if (src.MinIv != null) dest.MinIv = src.MinIv.Value;

@@ -46,6 +46,12 @@ public partial class PoracleTrackingProxy(
         }
     }
 
+    private static bool HasUid(JsonElement row) => row.TryGetProperty("uid", out var uid) && uid.TryGetInt32(out var value) && value > 0;
+
+    private static bool HasPersonalShiny(JsonElement body) => body.ValueKind == JsonValueKind.Array
+        ? body.EnumerateArray().Any(HasPersonalShiny)
+        : body.TryGetProperty("shiny_for", out var value) && value.ValueKind == JsonValueKind.String && !string.IsNullOrEmpty(value.GetString());
+
     private static string Encode(string id) => Uri.EscapeDataString(id);
     private readonly HttpClient _httpClient = httpClient;
     private readonly string _apiAddress = configuration["Poracle:ApiAddress"] ?? string.Empty;
@@ -84,6 +90,33 @@ public partial class PoracleTrackingProxy(
 
     public async Task<TrackingCreateResult> CreateAsync(string type, string userId, JsonElement body)
     {
+        if (type == "pokemon" && HasPersonalShiny(body) &&
+            (body.ValueKind == JsonValueKind.Array ? body.EnumerateArray().Any(row => !HasUid(row)) : !HasUid(body)))
+        {
+            var rows = body.ValueKind == JsonValueKind.Array ? body.EnumerateArray().ToArray() : [body];
+            var uids = new List<long>();
+            foreach (var row in rows)
+            {
+                if (!TrackingV2Translator.TryTranslate(type, row, out var translated, out var reason))
+                    throw new AlarmValidationException($"Cannot save personal shiny filter: {reason}");
+                if (row.TryGetProperty("uid", out var uid) && uid.TryGetInt32(out var existingUid) && existingUid > 0)
+                {
+                    var replaced = await this.PutV2Async(type, userId, existingUid, translated)
+                        ?? throw new AlarmValidationException("Personal shiny filters require the updated PoracleNG API.");
+                    uids.Add(replaced.Uid);
+                    continue;
+                }
+                using var personalRequest = this.CreateRequest(HttpMethod.Post,
+                    $"{this._apiAddress}/api/v2/humans/{Encode(userId)}/tracking/pokemon?silent=true");
+                personalRequest.Content = new StringContent("[" + translated.GetRawText() + "]", Encoding.UTF8, "application/json");
+                using var personalResponse = await this._httpClient.SendAsync(personalRequest);
+                if (!personalResponse.IsSuccessStatusCode)
+                    throw new AlarmValidationException(await ExtractMessageAsync(personalResponse));
+                var savedUid = UidFromV2Envelope(await personalResponse.Content.ReadAsStringAsync());
+                if (savedUid is > 0) uids.Add(savedUid.Value);
+            }
+            return new TrackingCreateResult(uids, 0, 0, uids.Count);
+        }
         var bodyText = body.GetRawText();
         LogCreateRequest(this._logger, type, userId, bodyText);
         var request = this.CreateRequest(HttpMethod.Post, $"{this._apiAddress}/api/tracking/{type}/{Encode(userId)}?silent=true");
@@ -152,6 +185,13 @@ public partial class PoracleTrackingProxy(
     public async Task<TrackingUpdateResult> UpdateByUidAsync(
         string type, string userId, int uid, JsonElement body)
     {
+        if (type == "pokemon" && body.TryGetProperty("shiny_for", out _))
+        {
+            if (!TrackingV2Translator.TryTranslate(type, body, out var translated, out var reason))
+                throw new AlarmValidationException($"Cannot save shiny selection: {reason}");
+            return await this.PutV2Async(type, userId, uid, translated)
+                ?? throw new AlarmValidationException("Shiny selection requires the updated PoracleNG API.");
+        }
         if (await this.TryReplaceV2Async(type, userId, uid, body) is { } replaced)
         {
             return replaced;

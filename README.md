@@ -174,3 +174,14 @@ PoracleWeb.NET stands on the shoulders of these projects and their authors:
 - **[PoracleNG](https://github.com/jfberry/PoracleNG)** by jfberry — next-generation fork whose REST API powers all alarm tracking
 - **[PoracleWeb (PHP)](https://github.com/bbdoc/PoracleWeb)** by bbdoc — the original PHP web interface that inspired this .NET rewrite
 - **[Kōji](https://github.com/TurtIeSocks/Koji)** by TurtIeSocks — geofence management platform used for admin areas, region detection, and public geofence promotion
+
+## Personal shiny alerts (fork)
+
+Requires the matching sy1vi3/PoracleNG fork and its Diadem integration. Pokémon
+filters offer **Shiny for** with linked account names. Poracle verifies Diadem
+permissions on writes and delivery; newly granted access is rechecked when the
+user selects Personal shiny. Player IDs and integration tokens stay server-side.
+
+For multiple hostnames, leave `PUBLIC_URL` unset, configure each
+`Cors__AllowedOrigins__N`, and register `/api/auth/discord/callback` on each origin.
+Configure trusted reverse proxies so HTTPS callback URLs use the correct scheme.

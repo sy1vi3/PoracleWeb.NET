@@ -22,6 +22,7 @@ import { MasterDataService } from '../../core/services/masterdata.service';
 import { MonsterService } from '../../core/services/monster.service';
 import { PoracleConfigService } from '../../core/services/poracle-config.service';
 import { SettingsService } from '../../core/services/settings.service';
+import { PersonalShinyComponent } from '../../shared/components/personal-shiny/personal-shiny.component';
 import { ScopePickerComponent } from '../../shared/components/scope-picker/scope-picker.component';
 import { TemplateSelectorComponent } from '../../shared/components/template-selector/template-selector.component';
 import { AlarmScope, scopeOf, scopeToFields } from '../../shared/utils/alarm-scope';
@@ -31,6 +32,7 @@ import { minTimeLabel, minTimeOptions } from '../../shared/utils/min-time';
 
 @Component({
   imports: [
+    PersonalShinyComponent,
     ReactiveFormsModule,
     MatDialogModule,
     MatButtonModule,
@@ -117,6 +119,8 @@ export class PokemonEditDialogComponent implements OnInit {
   /** The alarm's current scope, read back into the shared picker. */
   readonly scope = signal<AlarmScope>(scopeOf(this.data.overrideLocationLabel, this.data.overrideAreas, this.data.distance));
 
+  readonly shinyFor = signal(this.data.shinyFor ?? '');
+
   readonly showCapPicker = computed(() => this.pvpCaps().length > 1);
 
   /** The hint under the costume select, which changes with the selection. */
@@ -200,6 +204,7 @@ export class PokemonEditDialogComponent implements OnInit {
       pvpRankingLeague: values.pvpRankingLeague ?? 0,
       pvpRankingMinCp: values.pvpRankingLeague ? (values.pvpRankingMinCp ?? 0) : 0,
       pvpRankingWorst: values.pvpRankingLeague ? (values.pvpRankingWorst ?? 100) : 4096,
+      shinyFor: this.shinyFor(),
       size: values.size ?? -1,
       sta: values.sta ?? 0,
       template: values.template || '',

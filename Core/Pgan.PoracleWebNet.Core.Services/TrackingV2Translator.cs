@@ -86,6 +86,7 @@ internal static class TrackingV2Translator
     {
         ["pokemon"] = new TypeSpec
         {
+            Strings = ["shiny_for"],
             Integers =
             [
                 "atk", "costume", "def", "distance", "form", "max_atk", "max_cp", "max_def", "max_iv",

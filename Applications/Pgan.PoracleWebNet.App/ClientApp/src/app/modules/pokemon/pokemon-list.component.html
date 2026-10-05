@@ -229,6 +229,9 @@
               }}</span>
             </div>
           }
+          @if (monster.shinyFor) {
+            <span class="filter-chip">✨ {{ monster.shinyFor === 'all' ? 'All linked accounts' : 'Account ' + monster.shinyFor }}</span>
+          }
           <app-rule-summary [text]="monster.description" />
         </mat-card-content>
         <mat-card-actions align="end">

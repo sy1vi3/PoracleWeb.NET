@@ -24,6 +24,7 @@
         <span class="tab-label">{{ 'POKEMON.TAB_FILTERS' | translate }}</span>
       </ng-template>
       <div class="tab-content">
+        <app-personal-shiny [(value)]="shinyFor" />
         <h4>{{ 'POKEMON.FILTER_IV_CP_LEVEL' | translate }}</h4>
         <div class="form-row">
           <mat-form-field appearance="outline">
