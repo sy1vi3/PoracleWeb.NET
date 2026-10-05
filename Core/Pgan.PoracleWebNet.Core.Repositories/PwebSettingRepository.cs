@@ -13,6 +13,11 @@ public class PwebSettingRepository(PoracleContext context) : IPwebSettingReposit
 
     public async Task<IEnumerable<PwebSetting>> GetAllAsync()
     {
+        // Fresh PoracleNG installs have no legacy PoracleJS settings table.
+        var exists = await this._context.Database.SqlQueryRaw<int>(
+            "SELECT COUNT(*) AS Value FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() " +
+            "AND TABLE_NAME = 'pweb_settings'").SingleAsync();
+        if (exists == 0) return [];
         var entities = await this._context.PwebSettings.ToListAsync();
         return entities.Select(e => e.ToModel());
     }

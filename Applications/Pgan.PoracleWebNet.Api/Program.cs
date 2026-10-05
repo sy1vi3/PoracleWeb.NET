@@ -369,8 +369,14 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<Pgan.PoracleWebNet.Data.PoracleContext>();
     try
     {
-        await db.Database.ExecuteSqlRawAsync(
-            "ALTER TABLE pweb_settings MODIFY COLUMN `value` LONGTEXT NULL");
+        var legacyColumn = await db.Database.SqlQueryRaw<int>(
+            "SELECT COUNT(*) AS Value FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() " +
+            "AND TABLE_NAME = 'pweb_settings' AND COLUMN_NAME = 'value' AND DATA_TYPE <> 'longtext'").SingleAsync();
+        if (legacyColumn > 0)
+        {
+            await db.Database.ExecuteSqlRawAsync(
+                "ALTER TABLE pweb_settings MODIFY COLUMN `value` LONGTEXT NULL");
+        }
     }
     catch (Exception ex)
     {
