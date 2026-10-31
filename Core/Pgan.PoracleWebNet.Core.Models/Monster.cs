@@ -2,8 +2,6 @@ namespace Pgan.PoracleWebNet.Core.Models;
 
 public class Monster
 {
-    public string ShinyFor { get; set; } = string.Empty;
-
     public int Uid
     {
         get; set;

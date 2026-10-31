@@ -24,7 +24,6 @@ import { MasterDataService } from '../../core/services/masterdata.service';
 import { MonsterService } from '../../core/services/monster.service';
 import { PoracleConfigService } from '../../core/services/poracle-config.service';
 import { SettingsService } from '../../core/services/settings.service';
-import { PersonalShinyComponent } from '../../shared/components/personal-shiny/personal-shiny.component';
 import { PokemonSelectorComponent } from '../../shared/components/pokemon-selector/pokemon-selector.component';
 import { ScopePickerComponent } from '../../shared/components/scope-picker/scope-picker.component';
 import { TemplateSelectorComponent } from '../../shared/components/template-selector/template-selector.component';
@@ -34,7 +33,6 @@ import { minTimeLabel, minTimeOptions } from '../../shared/utils/min-time';
 
 @Component({
   imports: [
-    PersonalShinyComponent,
     ReactiveFormsModule,
     MatDialogModule,
     MatButtonModule,
@@ -146,8 +144,6 @@ export class PokemonAddDialogComponent implements OnInit {
         },
   );
 
-  readonly shinyFor = signal('');
-
   /** Whether to render the cap picker at all — only when Poracle offers more than one cap. */
   readonly showCapPicker = computed(() => this.pvpCaps().length > 1);
 
@@ -246,7 +242,6 @@ export class PokemonAddDialogComponent implements OnInit {
           pvpRankingLeague: pvp.pvpRankingLeague ?? 0,
           pvpRankingMinCp: pvp.pvpRankingLeague ? (pvp.pvpRankingMinCp ?? 0) : 0,
           pvpRankingWorst: pvp.pvpRankingLeague ? (pvp.pvpRankingWorst ?? 100) : 4096,
-          shinyFor: this.shinyFor(),
           size: filters.size ?? -1,
           sta: filters.sta ?? 0,
           template: notif.template || null,

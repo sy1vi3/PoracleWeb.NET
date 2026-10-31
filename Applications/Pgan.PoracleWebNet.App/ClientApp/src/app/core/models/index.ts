@@ -5,7 +5,6 @@ export * from './active-hours.models';
 // ─── Monster ───────────────────────────────────────────────────────────────────
 
 export interface Monster {
-  shinyFor?: string;
   atk: number;
   clean: number;
   /** Costume filter: 9000 any, 0 none, N that costume. See shared/utils/costumes.ts. */

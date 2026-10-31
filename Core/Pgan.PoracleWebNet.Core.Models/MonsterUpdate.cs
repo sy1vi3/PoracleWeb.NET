@@ -4,9 +4,6 @@ namespace Pgan.PoracleWebNet.Core.Models;
 
 public class MonsterUpdate
 {
-    [StringLength(255)]
-    public string? ShinyFor { get; set; }
-
     [StringLength(256)]
     public string? Ping
     {

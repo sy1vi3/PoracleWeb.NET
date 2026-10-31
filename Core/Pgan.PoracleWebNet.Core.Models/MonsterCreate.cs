@@ -4,9 +4,6 @@ namespace Pgan.PoracleWebNet.Core.Models;
 
 public class MonsterCreate
 {
-    [StringLength(255)]
-    public string ShinyFor { get; set; } = string.Empty;
-
     [Range(0, int.MaxValue)]
     public int PokemonId
     {
